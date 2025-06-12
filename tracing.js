@@ -1,13 +1,8 @@
 const { NodeSDK } = require('@opentelemetry/sdk-node');
 const { ConsoleSpanExporter } = require('@opentelemetry/exporter-traces-console');
-const {
-  PeriodicExportingMetricReader,
-  ConsoleMetricExporter,
-} = require('@opentelemetry/sdk-metrics');
+const { PeriodicExportingMetricReader, ConsoleMetricExporter } = require('@opentelemetry/sdk-metrics');
 const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
-const {
-  TraceIdRatioBasedSampler,
-} = require('@opentelemetry/sdk-trace-node');
+const { TraceIdRatioBasedSampler } = require('@opentelemetry/sdk-trace-node');
 
 const sdk = new NodeSDK({
   traceExporter: new ConsoleSpanExporter(),
