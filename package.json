@@ -1,0 +1,19 @@
+{
+  "name": "express-opentelemetry-example",
+  "version": "1.0.0",
+  "description": "Exemplo simples de aplicação Express para OpenTelemetry",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "express",
+    "node",
+    "opentelemetry"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.4"
+  }
+}
