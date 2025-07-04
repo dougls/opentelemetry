@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: database
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: userdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+  
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - OTEL_SERVICE_NAME=backend
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4318/v1/traces
+  
+  business:
+    build:
+      context: ./business
+    container_name: business
+    ports:
+      - "8082:8082"
+    depends_on:
+      - database
+      - otel-collector
+    environment:
+      - OTEL_SERVICE_NAME=business
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4318/v1/traces
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "8081:8081"
+    depends_on:
+      - business
+      - otel-collector
+    environment:
+      - OTEL_SERVICE_NAME=frontend
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4318/v1/traces
+  
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.101.0
+    container_name: otel-collector
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector/otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4318:4318" # OTLP HTTP
+    depends_on:
+      - jaeger
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.70.0
+    container_name: jaeger
+    ports:
+      - "16686:16686" # UI
+      - "4317:4317"
