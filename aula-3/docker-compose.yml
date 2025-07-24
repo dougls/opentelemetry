@@ -56,6 +56,7 @@ services:
       - ./otel-collector/otel-collector-config.yml:/etc/otel-collector-config.yml
     ports:
       - "4318:4318" # OTLP HTTP
+      - "8889:8889" # Prometheus metrics endpoint
     depends_on:
       - jaeger
 
@@ -65,3 +66,15 @@ services:
     ports:
       - "16686:16686" # UI
       - "4317:4317"
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - otel-collector
