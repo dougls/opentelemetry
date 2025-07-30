@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD [ "node", "--require", "./tracing.js", "index.js" ]
+CMD [ "node", "--require", "./telemetry.js", "index.js" ]
